@@ -1,16 +1,17 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchProducts } from "../api/products";
 import { MiniProduct, ProductCard } from "../components/ProductCard";
+import { PageError, PageLoading } from "../components/PageStatus";
 import {
   assetPath,
   categories,
   electronicsItems,
   homeOutdoorItems,
-  products,
   supplierRegions,
-} from "../data/products";
+  uiAssets,
+} from "../data/assets";
 
-const featuredProducts = products.filter((product) => product.featured).slice(0, 8);
-const recommended = products.slice(0, 10);
 const services = [
   { title: "Source from industry hubs", image: assetPath("Image/backgrounds/image 107.png") },
   { title: "Customize your products", image: assetPath("Image/backgrounds/Mask group (1).png") },
@@ -36,37 +37,101 @@ function CategoryShowcase({ title, subtitle, image, items }) {
 }
 
 function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [recommended, setRecommended] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadProducts = () => {
+    setLoading(true);
+    setError("");
+    Promise.all([fetchProducts({ featured: true }), fetchProducts()])
+      .then(([featured, all]) => {
+        setFeaturedProducts(featured);
+        setRecommended(all.slice(0, 10));
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="page-shell">
+        <PageLoading />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="page-shell">
+        <div className="container">
+          <PageError message={error} onRetry={loadProducts} />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="page-shell">
       <section className="container hero-shell">
         <aside className="category-menu section-card">
           {categories.map((category, index) => (
-            <Link key={category} className={index === 0 ? "active" : ""} to={`/products?search=${encodeURIComponent(category)}`}>
-              {category}
+            <Link
+              key={category.name}
+              className={`category-link ${index === 0 ? "active" : ""}`}
+              to={`/products?search=${encodeURIComponent(category.name)}`}
+            >
+              <img src={assetPath(category.icon)} alt="" aria-hidden="true" />
+              <span>{category.name}</span>
             </Link>
           ))}
         </aside>
 
-        <div className="hero-banner section-card" style={{ backgroundImage: `url("${assetPath("Image/backgrounds/Group 982.png")}")` }}>
+        <div
+          className="hero-banner section-card"
+          style={{ backgroundImage: `url("${assetPath("Image/backgrounds/Group 982.png")}")` }}
+        >
           <div>
             <p>Latest trending</p>
             <h1>Electronic items</h1>
-            <Link to="/products" className="white-button">Learn more</Link>
+            <Link to="/products" className="white-button">
+              Learn more
+            </Link>
           </div>
         </div>
 
         <aside className="hero-side">
           <div className="user-card section-card">
-            <div className="avatar">U</div>
+            <div className="avatar">
+              <img src={assetPath(uiAssets.userAvatar)} alt="User profile" />
+            </div>
             <div>
               <p>Hi, user</p>
               <strong>Let's get started</strong>
             </div>
-            <Link to="/products" className="primary-button full">Join now</Link>
-            <Link to="/products" className="ghost-button full">Log in</Link>
+            <Link to="/products" className="primary-button full">
+              Join now
+            </Link>
+            <Link to="/products" className="ghost-button full">
+              Log in
+            </Link>
           </div>
-          <div className="offer-card orange">Get US $10 off with a new supplier</div>
-          <div className="offer-card teal">Send quotes with supplier preferences</div>
+          {uiAssets.offerCards.map((offer) => (
+            <div
+              key={offer.text}
+              className={`offer-card ${offer.tone}`}
+              style={{
+                backgroundImage: `linear-gradient(120deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.15)), url("${assetPath(offer.image)}")`,
+              }}
+            >
+              {offer.text}
+            </div>
+          ))}
         </aside>
       </section>
 
@@ -75,10 +140,18 @@ function HomePage() {
           <h2>Deals and offers</h2>
           <p>Hygiene equipments</p>
           <div className="timer-row">
-            <span><strong>04</strong> Days</span>
-            <span><strong>13</strong> Hour</span>
-            <span><strong>34</strong> Min</span>
-            <span><strong>56</strong> Sec</span>
+            <span>
+              <strong>04</strong> Days
+            </span>
+            <span>
+              <strong>13</strong> Hour
+            </span>
+            <span>
+              <strong>34</strong> Min
+            </span>
+            <span>
+              <strong>56</strong> Sec
+            </span>
           </div>
         </div>
         <div className="deals-products">
@@ -86,7 +159,9 @@ function HomePage() {
             <Link key={product.id} className="deal-item" to={`/products/${product.id}`}>
               <img src={product.image} alt={product.name} />
               <strong>{product.name.split(" ").slice(0, 2).join(" ")}</strong>
-              <span>-{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%</span>
+              <span>
+                -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+              </span>
             </Link>
           ))}
         </div>
@@ -107,7 +182,12 @@ function HomePage() {
         />
       </div>
 
-      <section className="container inquiry-banner" style={{ backgroundImage: `linear-gradient(90deg, rgba(13, 110, 253, 0.92), rgba(0, 173, 181, 0.68)), url("${assetPath("Image/backgrounds/Banner-board-800x420 2.png")}")` }}>
+      <section
+        className="container inquiry-banner"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(13, 110, 253, 0.92), rgba(0, 173, 181, 0.68)), url("${assetPath("Image/backgrounds/Banner-board-800x420 2.png")}")`,
+        }}
+      >
         <div>
           <h2>An easy way to send requests to all suppliers</h2>
           <p>Tell us what you need, and suppliers will share prices, stock, and delivery options.</p>
@@ -123,7 +203,9 @@ function HomePage() {
               <option value="box">Box</option>
             </select>
           </div>
-          <button type="button" className="primary-button">Send inquiry</button>
+          <button type="button" className="primary-button">
+            Send inquiry
+          </button>
         </form>
       </section>
 

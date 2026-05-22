@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { assetPath } from "../data/products";
+import { assetPath, uiAssets } from "../data/assets";
 
 function Footer() {
   return (
@@ -9,10 +9,11 @@ function Footer() {
           <img src={assetPath("Layout/Brand/logo-colored.png")} alt="Brand" />
           <p>Best information about the company goes here but now lorem ipsum is used.</p>
           <div className="social-row" aria-label="Social links">
-            <span>f</span>
-            <span>t</span>
-            <span>in</span>
-            <span>ig</span>
+            {uiAssets.socialIcons.map((social) => (
+              <span key={social.label}>
+                <img src={assetPath(social.icon)} alt={social.label} />
+              </span>
+            ))}
           </div>
         </div>
         <div>

@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "seed": "node src/scripts/seed.js"
   },
   "dependencies": {
     "cors": "latest",
     "dotenv": "latest",
-    "express": "latest"
+    "express": "latest",
+    "mongoose": "latest"
   },
   "devDependencies": {
     "nodemon": "latest"

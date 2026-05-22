@@ -2,56 +2,65 @@
 
 Responsive eCommerce web app based on the **Ecommerce Web Design** Figma template (`assets.rar`).
 
-## Week 1 — Completed (Static Frontend)
+## Week 2 — Backend + Dynamic Data (current)
 
 | Requirement | Status |
 |-------------|--------|
-| Node.js + React (Vite) + Express scaffold | Done |
-| Home page (desktop + mobile) | Done |
-| Product listing page | Done |
-| Product details page | Done |
-| Cart page | Done |
-| Responsive layout (CSS Grid / Flexbox) | Done |
-| Figma assets in `client/public/assets` | Done |
+| MongoDB product storage | Done |
+| Express CRUD APIs | Done |
+| Product schema (id, name, price, image, description, category, stock) | Done |
+| Sample data seed | Done (auto on first server start) |
+| Home — featured products from API | Done |
+| Products listing — dynamic grid + search | Done |
+| Product details — dynamic | Done |
+| Cart — dynamic product data | Done |
+| Search by name or category | Done |
 
-### Pages
+## Tech stack
 
-| Route | Page |
-|-------|------|
-| `/` | Home — hero, deals, category showcases, inquiry form, recommended items |
-| `/products` | Product listing — filters, grid/list view, search |
-| `/products/:productId` | Product details — gallery, specs, supplier card |
-| `/cart` | Shopping cart — items, summary, saved section |
+- **Frontend:** React, Vite, React Router, CSS (same Figma screens/assets)
+- **Backend:** Node.js, Express, Mongoose
+- **Database:** MongoDB
 
-### Tech stack (Week 1)
+## Setup
 
-- **Frontend:** React 19, React Router, Vite, plain CSS
-- **Backend:** Express (health check only — APIs in Week 2)
-- **Data:** Static JSON in `client/src/data/products.js`
-
-## Project structure
-
-```text
-ecommerce-fullstack-design/
-├── client/                 React app
-│   ├── public/assets/      Images from assets.rar
-│   └── src/
-│       ├── components/     Header, Footer, ProductCard
-│       ├── context/        CartContext (static cart state)
-│       ├── data/           Sample products
-│       └── pages/          Home, Products, Details, Cart
-└── server/                 Express scaffold
-```
-
-## Run locally
-
-**1. Install dependencies**
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-**2. Start frontend (Week 1 main deliverable)**
+### 2. MongoDB
+
+Install [MongoDB Community](https://www.mongodb.com/try/download/community) locally, **or** use MongoDB Atlas and set `MONGODB_URI` in `server/.env`.
+
+Copy env file:
+
+```bash
+copy server\.env.example server\.env
+```
+
+Default local URI:
+
+```text
+mongodb://127.0.0.1:27017/ecommerce-fullstack-design
+```
+
+### 3. Run backend (Terminal 1)
+
+```bash
+npm run dev:server
+```
+
+On first run, the server **auto-seeds** 12 sample products if the database is empty.
+
+Manual re-seed:
+
+```bash
+npm run seed
+```
+
+### 4. Run frontend (Terminal 2)
 
 ```bash
 npm run dev:client
@@ -59,48 +68,44 @@ npm run dev:client
 
 Open: **http://127.0.0.1:5173**
 
-**3. Optional — backend health check**
+Vite proxies `/api` → `http://127.0.0.1:5000`.
 
-```bash
-npm run dev:server
+## API endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check |
+| GET | `/api/products` | List products (`?search=`, `?category=`, `?featured=true`) |
+| GET | `/api/products/meta/categories` | Distinct categories |
+| GET | `/api/products/:id` | Single product |
+| POST | `/api/products` | Create product |
+| PUT | `/api/products/:id` | Update product |
+| DELETE | `/api/products/:id` | Delete product |
+
+## Project structure
+
+```text
+client/
+  public/assets/     Figma export images
+  src/api/           API client
+  src/data/assets.js Static UI content (banners, regions)
+server/
+  src/models/        Mongoose Product model
+  src/routes/        CRUD routes
+  src/data/          Seed products
 ```
 
-API: **http://localhost:5000/api/health**
+## Week 2 test checklist
 
-**4. Production build**
+- [ ] Backend starts and logs `MongoDB connected` + `Seeded` or `already has N products`
+- [ ] `http://127.0.0.1:5000/api/products` returns JSON array
+- [ ] Home page shows deals + recommended from API
+- [ ] Search in header filters products on `/products`
+- [ ] Product detail page loads from `/api/products/:id`
+- [ ] Cart shows correct names, images, prices from API
 
-```bash
-npm run build
-```
+## Week 3 (next)
 
-## Week 1 testing checklist
+JWT auth, admin panel, cart persistence, deployment.
 
-- [ ] Home page loads with banner, deals, and product grids
-- [ ] Resize browser to mobile width (~375px) — layout stacks correctly
-- [ ] `/products` — category filters and search work
-- [ ] Click a product — details page opens with image gallery
-- [ ] **Add to cart** on details page → cart updates
-- [ ] `/cart` — change quantity, remove item, see totals
-- [ ] Header **Cart (n)** shows item count
-
-## GitHub submission (Week 1)
-
-Repository name: **`ecommerce-fullstack-design`**
-
-```bash
-git init
-git add .
-git commit -m "Week 1: static responsive eCommerce frontend"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/ecommerce-fullstack-design.git
-git push -u origin main
-```
-
-## Later weeks (not in Week 1 scope)
-
-- **Week 2:** MongoDB + product CRUD APIs + dynamic data
-- **Week 3:** JWT auth, admin panel, deployment, cart persistence
-
----
-
-**Deadline:** 5 June 2026 — record demo video for Google Classroom on that date.
+**Deadline:** 5 June 2026

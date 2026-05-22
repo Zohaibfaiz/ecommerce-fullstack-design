@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { assetPath, uiAssets } from "../data/assets";
 
 function Rating({ value, orders }) {
   return (
@@ -37,7 +38,8 @@ export function ProductCard({ product, variant = "grid" }) {
         aria-label={`Add ${product.name} to cart`}
         onClick={() => addToCart(product.id, 1)}
       >
-        Add
+        <img src={assetPath(uiAssets.wishlistIcon)} alt="" aria-hidden="true" />
+        <span>Add</span>
       </button>
     </article>
   );

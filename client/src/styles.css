@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
 :root {
   --blue: #0d6efd;
   --blue-dark: #005ade;
@@ -15,7 +13,7 @@
   --surface: #ffffff;
   --page: #f7fafc;
   --shadow: 0 18px 45px rgba(20, 37, 63, 0.08);
-  font-family: Inter, "Segoe UI", Roboto, sans-serif;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -167,11 +165,22 @@ a {
   outline: 0;
 }
 
-.search-form button {
+.search-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 0;
   color: #fff;
   background: linear-gradient(180deg, #127fff, var(--blue));
   font-weight: 700;
+}
+
+.search-submit img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .header-actions {
@@ -180,18 +189,19 @@ a {
   gap: 18px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.header-action-link {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
   text-align: center;
 }
 
-.header-actions a::before {
-  content: "";
-  display: block;
-  width: 22px;
-  height: 22px;
-  margin: 0 auto 4px;
-  border-radius: 7px;
-  background: var(--blue-soft);
-  box-shadow: inset 0 0 0 1px rgba(13, 110, 253, 0.12);
+.header-action-link img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 
 .mobile-search {
@@ -256,15 +266,24 @@ a {
   padding: 10px;
 }
 
-.category-menu a {
-  display: block;
+.category-menu .category-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: 6px;
   color: var(--text);
 }
 
-.category-menu a.active,
-.category-menu a:hover {
+.category-menu .category-link img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.category-menu .category-link.active,
+.category-menu .category-link:hover {
   color: var(--ink);
   background: #e5f1ff;
   font-weight: 700;
@@ -316,14 +335,19 @@ a {
 
 .avatar,
 .supplier-avatar {
-  display: grid;
-  place-items: center;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  color: #4a6b8a;
+  overflow: hidden;
+  flex-shrink: 0;
   background: #d1e7ff;
-  font-weight: 800;
+}
+
+.avatar img,
+.supplier-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .offer-card {
@@ -333,14 +357,16 @@ a {
   color: #fff;
   font-size: 16px;
   line-height: 1.35;
+  background-position: center;
+  background-size: cover;
 }
 
 .offer-card.orange {
-  background: var(--orange);
+  background-color: var(--orange);
 }
 
 .offer-card.teal {
-  background: #55bdc3;
+  background-color: #55bdc3;
 }
 
 .deals-section {
@@ -649,6 +675,9 @@ a {
   position: absolute;
   right: 12px;
   bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 5px 9px;
@@ -656,6 +685,12 @@ a {
   background: #fff;
   font-size: 12px;
   font-weight: 700;
+}
+
+.wishlist img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
 }
 
 .service-grid {
@@ -899,6 +934,30 @@ a {
 
 .stars {
   letter-spacing: 1px;
+}
+
+.page-status {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  min-height: 220px;
+  padding: 32px;
+  text-align: center;
+}
+
+.page-status h2,
+.page-status p {
+  margin: 0;
+}
+
+.loading-state p {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.error-state {
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .empty-state {
@@ -1407,12 +1466,18 @@ a {
 }
 
 .payment-row span {
+  display: grid;
+  place-items: center;
   padding: 5px 7px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  color: var(--muted);
   background: #f7fafc;
-  font-size: 12px;
+}
+
+.payment-row img {
+  width: 36px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .cart-benefits {
@@ -1422,23 +1487,19 @@ a {
   margin-top: 24px;
 }
 
-.cart-benefits div {
+.cart-benefits > div {
   display: grid;
-  gap: 4px;
-  padding-left: 52px;
-  position: relative;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
 }
 
-.cart-benefits div::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 40px;
-  height: 40px;
+.cart-benefits > div > img {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #dee2e7;
-  box-shadow: inset 0 0 0 9px #c9d3dd;
+  object-fit: cover;
+  border: 1px solid var(--line);
 }
 
 .cart-benefits span {
@@ -1490,13 +1551,18 @@ a {
 .social-row span {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  color: #fff;
-  background: #bdc4cd;
-  font-size: 12px;
-  font-weight: 700;
+  overflow: hidden;
+  background: #f7fafc;
+  border: 1px solid var(--line);
+}
+
+.social-row img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .store-badge {
@@ -1782,10 +1848,6 @@ a {
 
   .brand-link img {
     width: 132px;
-  }
-
-  .header-actions a::before {
-    display: none;
   }
 
   .hero-banner {

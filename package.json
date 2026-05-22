@@ -2,7 +2,7 @@
   "name": "ecommerce-fullstack-design",
   "version": "1.0.0",
   "private": true,
-  "description": "Week 1 static eCommerce frontend with React and Express setup.",
+  "description": "Full-stack eCommerce app with React, Express, and MongoDB.",
   "workspaces": [
     "client",
     "server"
@@ -11,6 +11,8 @@
     "dev": "npm run dev:client",
     "dev:client": "npm --workspace client run dev",
     "dev:server": "npm --workspace server run dev",
+    "seed": "npm --workspace server run seed",
+    "check:assets": "node scripts/check-assets.js",
     "build": "npm --workspace client run build",
     "preview": "npm --workspace client run preview",
     "start": "npm --workspace server start"

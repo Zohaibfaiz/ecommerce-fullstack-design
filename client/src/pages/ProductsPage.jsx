@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { fetchCategories, fetchProducts } from "../api/products";
 import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+import { PageError, PageLoading } from "../components/PageStatus";
 
 const sortOptions = ["Featured", "Price: low to high", "Price: high to low", "Best rating"];
 
@@ -9,29 +10,41 @@ function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState("grid");
   const [sort, setSort] = useState("Featured");
+  const [products, setProducts] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const searchTerm = searchParams.get("search") || "";
   const selectedCategory = searchParams.get("category") || "All";
-  const categories = ["All", ...new Set(products.map((product) => product.category))];
 
-  const filteredProducts = useMemo(() => {
-    const normalizedSearch = searchTerm.toLowerCase();
-    const items = products.filter((product) => {
-      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-      const matchesSearch =
-        !normalizedSearch ||
-        product.name.toLowerCase().includes(normalizedSearch) ||
-        product.category.toLowerCase().includes(normalizedSearch);
-      return matchesCategory && matchesSearch;
-    });
+  const loadProducts = () => {
+    setLoading(true);
+    setError("");
+    fetchProducts({ search: searchTerm, category: selectedCategory })
+      .then(setProducts)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
 
-    return [...items].sort((a, b) => {
+  useEffect(() => {
+    fetchCategories().then(setCategoryList).catch(() => setCategoryList([]));
+  }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [searchTerm, selectedCategory]);
+
+  const categories = ["All", ...categoryList];
+
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
       if (sort === "Price: low to high") return a.price - b.price;
       if (sort === "Price: high to low") return b.price - a.price;
       if (sort === "Best rating") return b.rating - a.rating;
       return Number(b.featured) - Number(a.featured);
     });
-  }, [searchTerm, selectedCategory, sort]);
+  }, [products, sort]);
 
   const chooseCategory = (category) => {
     const next = new URLSearchParams(searchParams);
@@ -65,7 +78,7 @@ function ProductsPage() {
           </div>
           <div className="filter-block">
             <h3>Brands</h3>
-            {['Samsung', 'Apple', 'Huawei', 'Pocco', 'Lenovo'].map((brand) => (
+            {["Samsung", "Apple", "Huawei", "Pocco", "Lenovo"].map((brand) => (
               <label key={brand}>
                 <input type="checkbox" /> {brand}
               </label>
@@ -73,7 +86,7 @@ function ProductsPage() {
           </div>
           <div className="filter-block">
             <h3>Features</h3>
-            {['Metallic', 'Plastic cover', '8GB Ram', 'Super power', 'Large memory'].map((feature) => (
+            {["Metallic", "Plastic cover", "8GB Ram", "Super power", "Large memory"].map((feature) => (
               <label key={feature}>
                 <input type="checkbox" /> {feature}
               </label>
@@ -86,7 +99,9 @@ function ProductsPage() {
               <input placeholder="Min" aria-label="Minimum price" />
               <input placeholder="Max" aria-label="Maximum price" />
             </div>
-            <button type="button" className="ghost-button full">Apply</button>
+            <button type="button" className="ghost-button full">
+              Apply
+            </button>
           </div>
         </aside>
 
@@ -106,7 +121,7 @@ function ProductsPage() {
 
           <div className="listing-toolbar section-card">
             <div>
-              <strong>{filteredProducts.length} items</strong>
+              <strong>{sortedProducts.length} items</strong>
               <span> in {selectedCategory === "All" ? "all categories" : selectedCategory}</span>
               {searchTerm ? <p>Search: {searchTerm}</p> : null}
             </div>
@@ -119,22 +134,33 @@ function ProductsPage() {
               ))}
             </select>
             <div className="view-switch" aria-label="View switcher">
-              <button className={view === "grid" ? "active" : ""} type="button" onClick={() => setView("grid")}>Grid</button>
-              <button className={view === "list" ? "active" : ""} type="button" onClick={() => setView("list")}>List</button>
+              <button className={view === "grid" ? "active" : ""} type="button" onClick={() => setView("grid")}>
+                Grid
+              </button>
+              <button className={view === "list" ? "active" : ""} type="button" onClick={() => setView("list")}>
+                List
+              </button>
             </div>
           </div>
 
-          <div className={view === "grid" ? "product-grid listing-grid" : "listing-list"}>
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} variant={view} />
-            ))}
-          </div>
+          {loading ? <PageLoading /> : null}
+          {!loading && error ? <PageError message={error} onRetry={loadProducts} /> : null}
 
-          {filteredProducts.length === 0 ? (
+          {!loading && !error ? (
+            <div className={view === "grid" ? "product-grid listing-grid" : "listing-list"}>
+              {sortedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} variant={view} />
+              ))}
+            </div>
+          ) : null}
+
+          {!loading && !error && sortedProducts.length === 0 ? (
             <div className="empty-state section-card">
               <h2>No products found</h2>
               <p>Try another product name or category.</p>
-              <button type="button" className="primary-button" onClick={() => setSearchParams({})}>Clear filters</button>
+              <button type="button" className="primary-button" onClick={() => setSearchParams({})}>
+                Clear filters
+              </button>
             </div>
           ) : null}
         </div>

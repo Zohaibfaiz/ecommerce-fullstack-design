@@ -1,11 +1,23 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchProducts } from "../api/products";
+import { assetPath, uiAssets } from "../data/assets";
 import { ProductCard } from "../components/ProductCard";
+import { PageError, PageLoading } from "../components/PageStatus";
 import { useCart } from "../context/CartContext";
-import { products } from "../data/products";
 
 function CartPage() {
   const { enrichedItems, updateQuantity, removeItem } = useCart();
+  const [savedItems, setSavedItems] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(true);
+  const [savedError, setSavedError] = useState("");
+
+  useEffect(() => {
+    fetchProducts()
+      .then((items) => setSavedItems(items.slice(5, 9)))
+      .catch((err) => setSavedError(err.message))
+      .finally(() => setSavedLoading(false));
+  }, []);
 
   const subtotal = useMemo(
     () => enrichedItems.reduce((total, item) => total + item.product.price * item.quantity, 0),
@@ -40,16 +52,22 @@ function CartPage() {
                   <Link to={`/products/${product.id}`}>{product.name}</Link>
                   <p>{product.description}</p>
                   <div className="cart-actions-row">
-                    <button type="button" onClick={() => removeItem(product.id)}>Remove</button>
+                    <button type="button" onClick={() => removeItem(product.id)}>
+                      Remove
+                    </button>
                     <button type="button">Save for later</button>
                   </div>
                 </div>
                 <div className="cart-row-side">
                   <strong>${(product.price * quantity).toFixed(2)}</strong>
                   <div className="quantity-control" aria-label={`Quantity for ${product.name}`}>
-                    <button type="button" onClick={() => updateQuantity(product.id, -1)}>-</button>
+                    <button type="button" onClick={() => updateQuantity(product.id, -1)}>
+                      -
+                    </button>
                     <span>{quantity}</span>
-                    <button type="button" onClick={() => updateQuantity(product.id, 1)}>+</button>
+                    <button type="button" onClick={() => updateQuantity(product.id, 1)}>
+                      +
+                    </button>
                   </div>
                 </div>
               </article>
@@ -58,7 +76,9 @@ function CartPage() {
             <div className="empty-state">
               <h2>Your cart is empty</h2>
               <p>Add products from the listing page to continue.</p>
-              <Link className="primary-button" to="/products">Browse products</Link>
+              <Link className="primary-button" to="/products">
+                Browse products
+              </Link>
             </div>
           )}
         </div>
@@ -88,40 +108,45 @@ function CartPage() {
               <span>Total:</span>
               <strong>${total.toFixed(2)}</strong>
             </div>
-            <button type="button" className="checkout-button full">Checkout</button>
+            <button type="button" className="checkout-button full">
+              Checkout
+            </button>
             <div className="payment-row">
-              <span>Visa</span>
-              <span>MC</span>
-              <span>PayPal</span>
+              {uiAssets.paymentMethods.map((method) => (
+                <span key={method.label}>
+                  <img src={assetPath(method.icon)} alt={method.label} />
+                </span>
+              ))}
             </div>
           </div>
         </aside>
       </section>
 
       <section className="container cart-benefits">
-        <div>
-          <strong>Secure payment</strong>
-          <span>Have you ever finally just</span>
-        </div>
-        <div>
-          <strong>Customer support</strong>
-          <span>Have you ever finally just</span>
-        </div>
-        <div>
-          <strong>Free delivery</strong>
-          <span>Have you ever finally just</span>
-        </div>
+        {uiAssets.cartBenefits.map((benefit) => (
+          <div key={benefit.title}>
+            <img src={assetPath(benefit.image)} alt="" aria-hidden="true" />
+            <div>
+              <strong>{benefit.title}</strong>
+              <span>{benefit.subtitle}</span>
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="container content-section saved-section section-card">
         <div className="section-heading">
           <h2>Saved for later</h2>
         </div>
-        <div className="product-grid related-grid">
-          {products.slice(5, 9).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {savedLoading ? <PageLoading message="Loading saved items..." /> : null}
+        {!savedLoading && savedError ? <PageError message={savedError} /> : null}
+        {!savedLoading && !savedError ? (
+          <div className="product-grid related-grid">
+            {savedItems.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : null}
       </section>
     </main>
   );

@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { products } from "../data/products";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { fetchProducts } from "../api/products";
 
 const CartContext = createContext(null);
 
@@ -11,6 +11,13 @@ const defaultCart = [
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(defaultCart);
+  const [catalog, setCatalog] = useState([]);
+
+  useEffect(() => {
+    fetchProducts()
+      .then(setCatalog)
+      .catch((error) => console.error("Cart catalog load failed:", error.message));
+  }, []);
 
   const addToCart = (productId, quantity = 1) => {
     setCartItems((items) => {
@@ -45,10 +52,10 @@ export function CartProvider({ children }) {
       cartItems
         .map((item) => ({
           ...item,
-          product: products.find((product) => product.id === item.productId),
+          product: catalog.find((product) => product.id === item.productId),
         }))
         .filter((item) => item.product),
-    [cartItems]
+    [cartItems, catalog]
   );
 
   const itemCount = useMemo(
@@ -58,6 +65,7 @@ export function CartProvider({ children }) {
 
   const value = {
     cartItems,
+    catalog,
     enrichedItems,
     itemCount,
     addToCart,

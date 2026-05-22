@@ -1,26 +1,70 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { fetchProductById, fetchProducts } from "../api/products";
 import { ProductCard, Rating } from "../components/ProductCard";
+import { PageError, PageLoading } from "../components/PageStatus";
 import { useCart } from "../context/CartContext";
-import { assetPath, products } from "../data/products";
+import { assetPath, uiAssets } from "../data/assets";
 
 function ProductDetailsPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const product = products.find((item) => item.id === productId) || products[0];
-  const [selectedImage, setSelectedImage] = useState(product.gallery?.[0] || product.image);
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadProduct = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const item = await fetchProductById(productId);
+      setProduct(item);
+      setSelectedImage(item.gallery?.[0] || item.image);
+      setQuantity(1);
+
+      const items = await fetchProducts({ category: item.category });
+      const others = items.filter((entry) => entry.id !== item.id);
+      setRelatedProducts(others.slice(0, 4));
+      setSuggestions(others.slice(0, 5));
+    } catch (err) {
+      setError(err.message);
+      setProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setSelectedImage(product.gallery?.[0] || product.image);
-    setQuantity(1);
+    loadProduct();
+  }, [productId]);
+
+  const discountPercent = useMemo(() => {
+    if (!product?.oldPrice) return 0;
+    return Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
   }, [product]);
 
-  const relatedProducts = useMemo(
-    () => products.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 4),
-    [product.category, product.id]
-  );
+  if (loading) {
+    return (
+      <main className="page-shell product-detail-page">
+        <PageLoading message="Loading product details..." />
+      </main>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <main className="page-shell product-detail-page">
+        <div className="container">
+          <PageError message={error || "Product not found"} onRetry={loadProduct} />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell product-detail-page">
@@ -52,7 +96,7 @@ function ProductDetailsPage() {
         </div>
 
         <div className="detail-info">
-          <span className="stock-label">In stock</span>
+          <span className="stock-label">{product.stock > 0 ? "In stock" : "Out of stock"}</span>
           <h1>{product.name}</h1>
           <Rating value={product.rating} orders={product.orders} />
           <div className="tier-price-card">
@@ -71,9 +115,13 @@ function ProductDetailsPage() {
           </div>
           <div className="detail-actions">
             <div className="quantity-control" aria-label="Order quantity">
-              <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>-</button>
+              <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>
+                -
+              </button>
               <span>{quantity}</span>
-              <button type="button" onClick={() => setQuantity((value) => value + 1)}>+</button>
+              <button type="button" onClick={() => setQuantity((value) => value + 1)}>
+                +
+              </button>
             </div>
             <button
               type="button"
@@ -85,7 +133,9 @@ function ProductDetailsPage() {
             >
               Add to cart
             </button>
-            <Link className="ghost-button" to="/products">Continue shopping</Link>
+            <Link className="ghost-button" to="/products">
+              Continue shopping
+            </Link>
           </div>
 
           <dl className="spec-list">
@@ -114,7 +164,12 @@ function ProductDetailsPage() {
 
         <aside className="supplier-card">
           <div className="supplier-head">
-            <div className="supplier-avatar">S</div>
+            <div className="supplier-avatar">
+              <img
+                src={product.flag || assetPath(uiAssets.supplierAvatar)}
+                alt={product.supplier}
+              />
+            </div>
             <div>
               <span>Supplier</span>
               <strong>{product.supplier}</strong>
@@ -130,16 +185,24 @@ function ProductDetailsPage() {
           <div className="supplier-line">
             <span>Worldwide shipping</span>
           </div>
-          <button type="button" className="primary-button full">Send inquiry</button>
-          <button type="button" className="ghost-button full">Seller profile</button>
-          <button type="button" className="save-later">Save for later</button>
+          <button type="button" className="primary-button full">
+            Send inquiry
+          </button>
+          <button type="button" className="ghost-button full">
+            Seller profile
+          </button>
+          <button type="button" className="save-later">
+            Save for later
+          </button>
         </aside>
       </section>
 
       <section className="container detail-bottom-layout">
         <article className="section-card description-card">
           <div className="tab-row">
-            <button type="button" className="active">Description</button>
+            <button type="button" className="active">
+              Description
+            </button>
             <button type="button">Reviews</button>
             <button type="button">Shipping</button>
             <button type="button">About seller</button>
@@ -173,12 +236,14 @@ function ProductDetailsPage() {
 
         <aside className="section-card may-like-card">
           <h2>You may like</h2>
-          {products.slice(4, 9).map((item) => (
+          {suggestions.map((item) => (
             <Link key={item.id} className="may-like-item" to={`/products/${item.id}`}>
               <img src={item.image} alt={item.name} />
               <div>
                 <strong>{item.name}</strong>
-                <span>${item.price.toFixed(2)} - ${item.oldPrice.toFixed(2)}</span>
+                <span>
+                  ${item.price.toFixed(2)} - ${item.oldPrice?.toFixed(2) || item.price.toFixed(2)}
+                </span>
               </div>
             </Link>
           ))}
@@ -197,12 +262,19 @@ function ProductDetailsPage() {
         </div>
       </section>
 
-      <section className="container discount-strip" style={{ backgroundImage: `linear-gradient(90deg, #237cff, #005ade), url("${assetPath("Image/backgrounds/Group 982.png")}")` }}>
+      <section
+        className="container discount-strip"
+        style={{
+          backgroundImage: `linear-gradient(90deg, #237cff, #005ade), url("${assetPath("Image/backgrounds/Group 982.png")}")`,
+        }}
+      >
         <div>
           <h2>Super discount on more than 100 USD</h2>
-          <p>Have you ever finally just write dummy info</p>
+          <p>Save up to {discountPercent}% on bulk orders</p>
         </div>
-        <Link className="orange-button" to="/products">Shop now</Link>
+        <Link className="orange-button" to="/products">
+          Shop now
+        </Link>
       </section>
     </main>
   );

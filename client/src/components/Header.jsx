@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { assetPath } from "../data/products";
+import { assetPath, uiAssets } from "../data/assets";
 
 const navItems = [
   { label: "All category", to: "/products" },
@@ -21,6 +21,13 @@ function Header() {
     const search = query.trim();
     navigate(search ? `/products?search=${encodeURIComponent(search)}` : "/products");
   };
+
+  const searchButton = (
+    <button type="submit" className="search-submit">
+      <img src={assetPath(uiAssets.searchIcon)} alt="" aria-hidden="true" />
+      <span>Search</span>
+    </button>
+  );
 
   return (
     <header className="site-header">
@@ -42,14 +49,19 @@ function Header() {
             <option value="Home and outdoor">Home and outdoor</option>
             <option value="Clothing">Clothing</option>
           </select>
-          <button type="submit">Search</button>
+          {searchButton}
         </form>
 
         <div className="header-actions" aria-label="Quick actions">
-          <Link to="/products">Profile</Link>
-          <Link to="/products">Message</Link>
-          <Link to="/products">Orders</Link>
-          <Link to="/cart">Cart ({itemCount})</Link>
+          {uiAssets.headerActions.map((action) => (
+            <Link key={action.label} className="header-action-link" to={action.to}>
+              <img src={assetPath(action.icon)} alt="" aria-hidden="true" />
+              <span>
+                {action.label}
+                {action.showCount ? ` (${itemCount})` : ""}
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -61,7 +73,10 @@ function Header() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <button type="submit">Go</button>
+          <button type="submit" className="search-submit">
+            <img src={assetPath(uiAssets.searchIcon)} alt="" aria-hidden="true" />
+            <span>Go</span>
+          </button>
         </form>
       </div>
 
