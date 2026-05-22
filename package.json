@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce-fullstack-design",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Week 1 static eCommerce frontend with React and Express setup.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "npm run dev:client",
+    "dev:client": "npm --workspace client run dev",
+    "dev:server": "npm --workspace server run dev",
+    "build": "npm --workspace client run build",
+    "preview": "npm --workspace client run preview",
+    "start": "npm --workspace server start"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT"
+}
