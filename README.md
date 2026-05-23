@@ -5,7 +5,7 @@ A fully functional, responsive, full-stack eCommerce web application built accor
 
 ## 🔗 Live Deployments
 * **Production Live URL:** [https://ecommerce-fullstack-design-ochre.vercel.app](https://ecommerce-fullstack-design-ochre.vercel.app)
-* **API Health Check:** [https://ecommerce-fullstack-design-ochre.vercel.app/api/health](https://ecommerce-fullstack-design-ochre.vercel.app/api/health)
+
 * **Seeded Database Engine:** MongoDB Atlas (AWS Mumbai Region)
 # 🖼️ Project Screenshots
 
