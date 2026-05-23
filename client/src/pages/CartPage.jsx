@@ -1,16 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../api/products";
 import { assetPath, uiAssets } from "../data/assets";
 import { ProductCard } from "../components/ProductCard";
 import { PageError, PageLoading } from "../components/PageStatus";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 function CartPage() {
-  const { enrichedItems, updateQuantity, removeItem } = useCart();
+  const { enrichedItems, updateQuantity, removeItem, clearCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [savedItems, setSavedItems] = useState([]);
   const [savedLoading, setSavedLoading] = useState(true);
   const [savedError, setSavedError] = useState("");
+
+  // Checkout modal states
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [isOrdered, setIsOrdered] = useState(false);
+  const [shippingName, setShippingName] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [shippingPhone, setShippingPhone] = useState("");
 
   useEffect(() => {
     fetchProducts()
@@ -26,6 +37,34 @@ function CartPage() {
   const discount = subtotal > 100 ? 12 : 0;
   const tax = subtotal * 0.08;
   const total = subtotal - discount + tax;
+
+  const handleCheckoutClick = () => {
+    if (!enrichedItems.length) return;
+    if (!user) {
+      // Redirect to login page and remember to redirect back to cart
+      navigate("/login", { state: { from: "/cart" } });
+      return;
+    }
+    // Prefill name if user is logged in
+    setShippingName(user.name || "");
+    setShowCheckout(true);
+  };
+
+  const handlePlaceOrder = (e) => {
+    e.preventDefault();
+    if (!shippingName || !shippingAddress || !shippingPhone) {
+      alert("Please fill out all shipping details.");
+      return;
+    }
+    setIsOrdered(true);
+    setTimeout(() => {
+      clearCart();
+      setShowCheckout(false);
+      setIsOrdered(false);
+      setShippingAddress("");
+      setShippingPhone("");
+    }, 3000);
+  };
 
   return (
     <main className="page-shell cart-page">
@@ -108,7 +147,12 @@ function CartPage() {
               <span>Total:</span>
               <strong>${total.toFixed(2)}</strong>
             </div>
-            <button type="button" className="checkout-button full">
+            <button
+              type="button"
+              className="checkout-button full"
+              onClick={handleCheckoutClick}
+              disabled={!enrichedItems.length}
+            >
               Checkout
             </button>
             <div className="payment-row">
@@ -148,6 +192,74 @@ function CartPage() {
           </div>
         ) : null}
       </section>
+
+      {/* Premium Checkout Modal */}
+      {showCheckout && (
+        <div className="checkout-modal-overlay">
+          <div className="checkout-modal">
+            <div className="checkout-modal-header">
+              <h2>Secure Checkout</h2>
+              <button
+                type="button"
+                className="checkout-modal-close"
+                onClick={() => setShowCheckout(false)}
+                disabled={isOrdered}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="checkout-modal-body">
+              {isOrdered ? (
+                <div className="checkout-modal-success">
+                  <div className="checkout-success-icon">✓</div>
+                  <h3>Order Placed Successfully!</h3>
+                  <p>Thank you for your purchase. Your order has been registered and is being processed.</p>
+                </div>
+              ) : (
+                <form className="checkout-form" onSubmit={handlePlaceOrder}>
+                  <label>
+                    Full Name
+                    <input
+                      type="text"
+                      placeholder="e.g. John Doe"
+                      value={shippingName}
+                      onChange={(e) => setShippingName(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Shipping Address
+                    <input
+                      type="text"
+                      placeholder="e.g. 123 Main St, New York"
+                      value={shippingAddress}
+                      onChange={(e) => setShippingAddress(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Phone Number
+                    <input
+                      type="tel"
+                      placeholder="e.g. +1 234 567 890"
+                      value={shippingPhone}
+                      onChange={(e) => setShippingPhone(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <div className="checkout-summary-bar">
+                    <span>Grand Total:</span>
+                    <strong>${total.toFixed(2)}</strong>
+                  </div>
+                  <button type="submit" className="primary-button full" style={{ marginTop: "10px" }}>
+                    Confirm & Place Order
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -23,6 +23,15 @@ function readStoredCart() {
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(readStoredCart);
   const [catalog, setCatalog] = useState([]);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = "success") => {
+    const id = Date.now();
+    setToasts((current) => [...current, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((current) => current.filter((t) => t.id !== id));
+    }, 3000);
+  };
 
   useEffect(() => {
     fetchProducts()
@@ -35,17 +44,22 @@ export function CartProvider({ children }) {
   }, [cartItems]);
 
   const addToCart = (productId, quantity = 1) => {
+    const product = catalog.find((p) => p.id === productId);
+    const productName = product ? product.name : "Product";
+
     setCartItems((items) => {
       const existing = items.find((item) => item.productId === productId);
       if (existing) {
         return items.map((item) =>
           item.productId === productId
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: item.quantity + Number(quantity) }
             : item
         );
       }
-      return [...items, { productId, quantity }];
+      return [...items, { productId, quantity: Number(quantity) }];
     });
+
+    addToast(`Added to cart: ${productName}`, "success");
   };
 
   const updateQuantity = (productId, direction) => {
@@ -59,10 +73,17 @@ export function CartProvider({ children }) {
   };
 
   const removeItem = (productId) => {
+    const product = catalog.find((p) => p.id === productId);
+    const productName = product ? product.name : "Product";
+
     setCartItems((items) => items.filter((item) => item.productId !== productId));
+    addToast(`Removed from cart: ${productName}`, "success");
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = () => {
+    setCartItems([]);
+    addToast("Shopping cart cleared.", "success");
+  };
 
   const enrichedItems = useMemo(
     () =>
@@ -91,7 +112,30 @@ export function CartProvider({ children }) {
     clearCart,
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      <div className="toast-container" aria-live="polite">
+        {toasts.map((toast) => (
+          <div key={toast.id} className={`cart-toast ${toast.type}`}>
+            <div className="cart-toast-icon">✓</div>
+            <div className="cart-toast-content">
+              <strong>Shopping Cart</strong>
+              <span>{toast.message}</span>
+            </div>
+            <button
+              type="button"
+              className="cart-toast-close"
+              onClick={() => setToasts((current) => current.filter((t) => t.id !== toast.id))}
+              aria-label="Close notification"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </CartContext.Provider>
+  );
 }
 
 export function useCart() {
