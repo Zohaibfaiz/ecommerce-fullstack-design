@@ -114,10 +114,10 @@ function HomePage() {
               <p>Hi, user</p>
               <strong>Let's get started</strong>
             </div>
-            <Link to="/products" className="primary-button full">
+            <Link to="/register" className="primary-button full">
               Join now
             </Link>
-            <Link to="/products" className="ghost-button full">
+            <Link to="/login" className="ghost-button full">
               Log in
             </Link>
           </div>

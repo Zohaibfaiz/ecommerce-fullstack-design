@@ -1,6 +1,5 @@
 import { assetPath } from "../data/assets";
-
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+import { apiFetch } from "./http";
 
 function toAssetUrl(path) {
   if (!path) return path;
@@ -19,14 +18,6 @@ export function normalizeProduct(product) {
   };
 }
 
-async function parseResponse(response) {
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.message || `Request failed (${response.status})`);
-  }
-  return data;
-}
-
 export async function fetchProducts(params = {}) {
   const query = new URLSearchParams();
   if (params.search) query.set("search", params.search);
@@ -34,19 +25,35 @@ export async function fetchProducts(params = {}) {
   if (params.featured) query.set("featured", "true");
 
   const suffix = query.toString() ? `?${query}` : "";
-  const response = await fetch(`${API_BASE}/products${suffix}`);
-  const products = await parseResponse(response);
+  const products = await apiFetch(`/products${suffix}`);
   return products.map(normalizeProduct);
 }
 
 export async function fetchProductById(id) {
-  const response = await fetch(`${API_BASE}/products/${id}`);
-  const product = await parseResponse(response);
+  const product = await apiFetch(`/products/${id}`);
   return normalizeProduct(product);
 }
 
 export async function fetchCategories() {
-  const response = await fetch(`${API_BASE}/products/meta/categories`);
-  const categories = await parseResponse(response);
-  return categories;
+  return apiFetch("/products/meta/categories");
+}
+
+export async function createProduct(payload) {
+  const product = await apiFetch("/products", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return normalizeProduct(product);
+}
+
+export async function updateProduct(id, payload) {
+  const product = await apiFetch(`/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+  return normalizeProduct(product);
+}
+
+export async function deleteProduct(id) {
+  return apiFetch(`/products/${id}`, { method: "DELETE" });
 }

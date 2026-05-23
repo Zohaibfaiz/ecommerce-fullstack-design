@@ -1,111 +1,51 @@
 # ecommerce-fullstack-design
 
-Responsive eCommerce web app based on the **Ecommerce Web Design** Figma template (`assets.rar`).
+Full-stack responsive eCommerce app (Figma assets + React + Express + MongoDB).
 
-## Week 2 — Backend + Dynamic Data (current)
+## Features (Week 1-3)
 
-| Requirement | Status |
-|-------------|--------|
-| MongoDB product storage | Done |
-| Express CRUD APIs | Done |
-| Product schema (id, name, price, image, description, category, stock) | Done |
-| Sample data seed | Done (auto on first server start) |
-| Home — featured products from API | Done |
-| Products listing — dynamic grid + search | Done |
-| Product details — dynamic | Done |
-| Cart — dynamic product data | Done |
-| Search by name or category | Done |
+- Week 1: Responsive shop UI (Home, Products, Details, Cart)
+- Week 2: MongoDB + product APIs + dynamic pages + search
+- Week 3: JWT auth, admin CRUD, cart localStorage, deployment ready
 
-## Tech stack
-
-- **Frontend:** React, Vite, React Router, CSS (same Figma screens/assets)
-- **Backend:** Node.js, Express, Mongoose
-- **Database:** MongoDB
-
-## Setup
-
-### 1. Install dependencies
+## Quick start
 
 ```bash
 npm install
-```
-
-### 2. MongoDB
-
-Install [MongoDB Community](https://www.mongodb.com/try/download/community) locally, **or** use MongoDB Atlas and set `MONGODB_URI` in `server/.env`.
-
-Copy env file:
-
-```bash
 copy server\.env.example server\.env
-```
-
-Default local URI:
-
-```text
-mongodb://127.0.0.1:27017/ecommerce-fullstack-design
-```
-
-### 3. Run backend (Terminal 1)
-
-```bash
 npm run dev:server
-```
-
-On first run, the server **auto-seeds** 12 sample products if the database is empty.
-
-Manual re-seed:
-
-```bash
-npm run seed
-```
-
-### 4. Run frontend (Terminal 2)
-
-```bash
 npm run dev:client
 ```
 
-Open: **http://127.0.0.1:5173**
+Open http://127.0.0.1:5173
 
-Vite proxies `/api` → `http://127.0.0.1:5000`.
+### Demo admin
 
-## API endpoints
+- Email: admin@brand.com
+- Password: admin123
+- Admin panel: /admin (protected)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| GET | `/api/products` | List products (`?search=`, `?category=`, `?featured=true`) |
-| GET | `/api/products/meta/categories` | Distinct categories |
-| GET | `/api/products/:id` | Single product |
-| POST | `/api/products` | Create product |
-| PUT | `/api/products/:id` | Update product |
-| DELETE | `/api/products/:id` | Delete product |
+## Week 3
 
-## Project structure
+- Register / Login with JWT
+- Protected admin routes and product CRUD
+- Cart saved in localStorage
+- All 49 asset files used (npm run check:assets)
 
-```text
-client/
-  public/assets/     Figma export images
-  src/api/           API client
-  src/data/assets.js Static UI content (banners, regions)
-server/
-  src/models/        Mongoose Product model
-  src/routes/        CRUD routes
-  src/data/          Seed products
+## Deploy on Render
+
+1. Push to GitHub repo ecommerce-fullstack-design
+2. New Web Service on Render, use render.yaml
+3. Set MONGODB_URI (Atlas), JWT_SECRET, NODE_ENV=production
+4. Build: npm install && npm run build
+5. Start: npm run start:prod
+
+## Production local
+
+```bash
+npm run build
+set NODE_ENV=production
+npm run start:prod
 ```
 
-## Week 2 test checklist
-
-- [ ] Backend starts and logs `MongoDB connected` + `Seeded` or `already has N products`
-- [ ] `http://127.0.0.1:5000/api/products` returns JSON array
-- [ ] Home page shows deals + recommended from API
-- [ ] Search in header filters products on `/products`
-- [ ] Product detail page loads from `/api/products/:id`
-- [ ] Cart shows correct names, images, prices from API
-
-## Week 3 (next)
-
-JWT auth, admin panel, cart persistence, deployment.
-
-**Deadline:** 5 June 2026
+Deadline: 5 June 2026

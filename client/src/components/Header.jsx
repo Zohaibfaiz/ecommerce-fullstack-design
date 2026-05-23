@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { assetPath, uiAssets } from "../data/assets";
 
@@ -14,6 +15,7 @@ const navItems = [
 function Header() {
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { user, isAdmin, logout } = useAuth();
   const [query, setQuery] = useState("");
 
   const handleSearch = (event) => {
@@ -62,6 +64,25 @@ function Header() {
               </span>
             </Link>
           ))}
+          {user ? (
+            <>
+              {isAdmin ? (
+                <Link className="header-action-link admin-link" to="/admin">
+                  <img src={assetPath("Layout/Form/input-group/Icon/control/Vector2.png")} alt="" />
+                  <span>Admin</span>
+                </Link>
+              ) : null}
+              <button type="button" className="header-action-link header-logout" onClick={logout}>
+                <img src={assetPath("Layout1/Image/flags/icon.png")} alt="" />
+                <span>Logout</span>
+              </button>
+            </>
+          ) : (
+            <Link className="header-action-link" to="/login">
+              <img src={assetPath("Layout1/Image/flags/icon.png")} alt="" />
+              <span>Login</span>
+            </Link>
+          )}
         </div>
       </div>
 

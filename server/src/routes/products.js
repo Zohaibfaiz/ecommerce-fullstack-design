@@ -1,5 +1,6 @@
 import { Router } from "express";
 import Product from "../models/Product.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", requireAdmin, async (req, res, next) => {
   try {
     const { id, name, price, image, description, category, stock } = req.body;
     if (!id || !name || price == null || !image || !description || !category || stock == null) {
@@ -72,7 +73,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", requireAdmin, async (req, res, next) => {
   try {
     const product = await Product.findOneAndUpdate({ id: req.params.id }, req.body, {
       new: true,
@@ -89,7 +90,7 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const product = await Product.findOneAndDelete({ id: req.params.id }).lean();
     if (!product) {

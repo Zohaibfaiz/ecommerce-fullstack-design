@@ -2,15 +2,26 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchProducts } from "../api/products";
 
 const CartContext = createContext(null);
+const CART_STORAGE_KEY = "ecommerce_cart_v1";
 
 const defaultCart = [
   { productId: "wireless-headphones", quantity: 1 },
   { productId: "winter-jacket", quantity: 2 },
-  { productId: "ceramic-pot", quantity: 3 },
 ];
 
+function readStoredCart() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return defaultCart;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : defaultCart;
+  } catch {
+    return defaultCart;
+  }
+}
+
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState(defaultCart);
+  const [cartItems, setCartItems] = useState(readStoredCart);
   const [catalog, setCatalog] = useState([]);
 
   useEffect(() => {
@@ -18,6 +29,10 @@ export function CartProvider({ children }) {
       .then(setCatalog)
       .catch((error) => console.error("Cart catalog load failed:", error.message));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (productId, quantity = 1) => {
     setCartItems((items) => {
@@ -47,6 +62,8 @@ export function CartProvider({ children }) {
     setCartItems((items) => items.filter((item) => item.productId !== productId));
   };
 
+  const clearCart = () => setCartItems([]);
+
   const enrichedItems = useMemo(
     () =>
       cartItems
@@ -71,6 +88,7 @@ export function CartProvider({ children }) {
     addToCart,
     updateQuantity,
     removeItem,
+    clearCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

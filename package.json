@@ -14,8 +14,10 @@
     "seed": "npm --workspace server run seed",
     "check:assets": "node scripts/check-assets.js",
     "build": "npm --workspace client run build",
+    "build:all": "npm run build",
     "preview": "npm --workspace client run preview",
-    "start": "npm --workspace server start"
+    "start": "npm --workspace server start",
+    "start:prod": "npm --workspace server start"
   },
   "keywords": [
     "ecommerce",
