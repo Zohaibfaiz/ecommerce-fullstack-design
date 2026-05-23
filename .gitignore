@@ -4,3 +4,4 @@ server/.env
 .DS_Store
 *.log
 asset-contact-sheet.png
+.vercel

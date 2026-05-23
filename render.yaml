@@ -17,4 +17,4 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CLIENT_URL
-        value: https://ecommerce-fullstack-design.onrender.com
+        value: https://client-one-roan-32.vercel.app
