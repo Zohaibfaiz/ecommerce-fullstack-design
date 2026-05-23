@@ -5,6 +5,9 @@ import User from "../models/User.js";
 import { seedProducts } from "../data/seedProducts.js";
 
 export async function connectDatabase() {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
   const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ecommerce-fullstack-design";
   mongoose.set("strictQuery", true);
   await mongoose.connect(uri);
