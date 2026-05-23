@@ -1,4 +1,4 @@
-<img width="1919" height="1033" alt="Screenshot 2026-05-23 160631" src="https://github.com/user-attachments/assets/11db9e4d-9237-4161-ad7c-9a7185bc69ec" />
+
 # Full-Stack eCommerce Web Application 🚀
 
 A fully functional, responsive, full-stack eCommerce web application built according to the Ecommerce Web Design Figma specifications. It includes modern visual aesthetics, dynamic content delivery, user authentication, interactive cart management, an automated checkout system, and a comprehensive protected Admin Dashboard.
@@ -7,19 +7,69 @@ A fully functional, responsive, full-stack eCommerce web application built accor
 * **Production Live URL:** [https://ecommerce-fullstack-design-ochre.vercel.app](https://ecommerce-fullstack-design-ochre.vercel.app)
 * **API Health Check:** [https://ecommerce-fullstack-design-ochre.vercel.app/api/health](https://ecommerce-fullstack-design-ochre.vercel.app/api/health)
 * **Seeded Database Engine:** MongoDB Atlas (AWS Mumbai Region)
+# 🖼️ Project Screenshots
 
-Screenshot:
-<img width="466" height="433" alt="Screenshot 2026-05-23 161631" src="https://github.com/user-attachments/assets/b6688d3d-1daf-435f-ab73-4741868e018a" />
-<img width="1919" height="1019" alt="Screenshot 2026-05-23 160711" src="https://github.com/user-attachments/assets/03432278-8873-46ce-ae87-19f5ba5c4dc8" />
-<img width="1912" height="995" alt="Screenshot 2026-05-23 160648" src="https://github.com/user-attachments/assets/e7f09f7f-523f-4515-a5c4-70240d132ad2" />
-<img width="1905" height="1053" alt="Screenshot 2026-05-23 160637" src="https://github.com/user-attachments/assets/59c4e32a-92fe-43ce-9536-efc239ee4a75" />
-<img width="1919" height="1033" alt="Screenshot 2026-05-23 160631" src="https://github.com/user-attachments/assets/c9ee2de3-efc4-4dc3-9409-b9b35f1d65dd" />
-<img width="1910" height="1051" alt="Screenshot 2026-05-23 160623" src="https://github.com/user-attachments/assets/54d7d7ff-80e0-43b9-bcd6-a307a49bf71f" />
-<img width="1919" height="1050" alt="Screenshot 2026-05-23 160615" src="https://github.com/user-attachments/assets/4ebc4211-244d-4b85-8f1c-0cf1b8fac16c" />
-<img width="1916" height="1026" alt="Screenshot 2026-05-23 160605" src="https://github.com/user-attachments/assets/e7f28df5-e3ec-4d24-996c-4e6613ff8838" />
-<img width="1919" height="983" alt="Screenshot 2026-05-23 160529" src="https://github.com/user-attachments/assets/6d50f715-1f9a-4ee3-a81c-8bc1ccf97a3e" />
-<img width="1884" height="1020" alt="Screenshot 2026-05-23 160503" src="https://github.com/user-attachments/assets/88eb04cd-a3a6-466d-b4bc-46b71abe5ba3" />
+<div align="center">
 
+## 📌 Main Dashboard
+
+<img width="100%" alt="Dashboard" src="https://github.com/user-attachments/assets/6d50f715-1f9a-4ee3-a81c-8bc1ccf97a3e" />
+
+<br><br>
+
+## 📌 Home Interface
+
+<img width="100%" alt="Home" src="https://github.com/user-attachments/assets/88eb04cd-a3a6-466d-b4bc-46b71abe5ba3" />
+
+<br><br>
+
+## 📌 Books Collection
+
+<img width="100%" alt="Books Collection" src="https://github.com/user-attachments/assets/e7f28df5-e3ec-4d24-996c-4e6613ff8838" />
+
+<br><br>
+
+## 📌 Categories Section
+
+<img width="100%" alt="Categories" src="https://github.com/user-attachments/assets/4ebc4211-244d-4b85-8f1c-0cf1b8fac16c" />
+
+<br><br>
+
+## 📌 Book Details
+
+<img width="100%" alt="Book Details" src="https://github.com/user-attachments/assets/54d7d7ff-80e0-43b9-bcd6-a307a49bf71f" />
+
+<br><br>
+
+## 📌 Search Feature
+
+<img width="100%" alt="Search" src="https://github.com/user-attachments/assets/c9ee2de3-efc4-4dc3-9409-b9b35f1d65dd" />
+
+<br><br>
+
+## 📌 User Panel
+
+<img width="100%" alt="User Panel" src="https://github.com/user-attachments/assets/59c4e32a-92fe-43ce-9536-efc239ee4a75" />
+
+<br><br>
+
+## 📌 Borrowing System
+
+<img width="100%" alt="Borrowing System" src="https://github.com/user-attachments/assets/e7f09f7f-523f-4515-a5c4-70240d132ad2" />
+
+<br><br>
+
+## 📌 Admin Dashboard
+
+<img width="100%" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/03432278-8873-46ce-ae87-19f5ba5c4dc8" />
+
+<br><br>
+
+## 📌 Mobile Responsive Design
+
+<img width="350" alt="Mobile View" src="https://github.com/user-attachments/assets/b6688d3d-1daf-435f-ab73-4741868e018a" />
+
+</div>
 
 
 
